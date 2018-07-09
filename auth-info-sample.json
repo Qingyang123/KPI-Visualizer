@@ -1,0 +1,20 @@
+{
+	"youtube": {
+		"channel-id":"YourChannelIDHere",
+		"auth-key":"TheAuthKeyForYourChannel"
+	},
+	"facebook": {
+		"auth-token":"YourFBAuthToken",
+		"page-id":"YourFacebookPageID"
+	},
+	"google-sheet": {
+		"id":"sheet-id"
+	},
+	"jira": {
+		"username":"sampleuser",
+		"password":"samplepassword"
+	},
+	"google-analytics": {
+		"pageName":"viewIDHERE"
+	}
+}
