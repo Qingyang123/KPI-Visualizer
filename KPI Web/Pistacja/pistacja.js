@@ -1,31 +1,66 @@
-var title = document.querySelector('h2');
+var header = document.getElementsByClassName('header')[0];
+var sections = document.getElementsByClassName('section');
+var title = document.getElementsByClassName('title')[0];
 var numberButton = document.getElementById('numberButton');
 var chartButton = document.getElementById('chartButton');
 var slideShowNumber = document.getElementsByClassName('slideShow')[0];
 var slideShowChart = document.getElementsByClassName('slideShow')[1];
 var dataTables = document.querySelectorAll('table');
 var charts = document.getElementsByClassName('chart');
+var startPauseBody = document.getElementById('startPauseBody');
 var startPauseButton = document.getElementById('startPauseButton');
 var dots = document.getElementsByClassName('dot');
 var youtubeDropdown = document.getElementById('youtube-dropdown');
 var youtubeNoDropdown = document.getElementById('youtube-no-dropdown');
 var slideShowState = true;
+var maximum = [];
+var run = false;
+var run2 = false;
+var run3 = false;
+var run4 = false;
+var monthNames = {"01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", "05": "May", "06": "Jun",
+"07": "Jul", "08": "Aug", "09": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"};
+
 
 
 $(document).ready(function() {
-
 	setTimeout(function(){
 		$('body').addClass('loaded');
     $('body').removeClass('preloaded');
-	}, 3000);
-
+	}, 1000);
+	$('.buttons').delay(1400).animate({'top': '32%', 'opacity': 1}, 700);
 });
 
+$(window).on('scroll', function() {
+	// console.log($('section'));
+	// console.log($(window).scrollTop());
+	var scrollHeight = $(document).height();
+	var scrollPosition = $(window).height() + $(window).scrollTop();
+	console.log(scrollPosition);
+	// if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
+	// if (scrollHeight- scrollPosition === 0) {
+
+			// console.log(scrollPosition);
+	// }
+});
 
 // If numberButton is selected:
 numberButton.addEventListener('click', function() {
   title.style.display = 'block';
   title.style.marginTop = '55px';
+	header.parentNode.removeChild(header);
+	sections[0].parentNode.removeChild(sections[0]);
+	document.getElementById('section2').parentNode.removeChild(document.getElementById('section2'));
+	document.getElementById('section3').parentNode.removeChild(document.getElementById('section3'));
+	document.getElementById('section4').parentNode.removeChild(document.getElementById('section4'));
+	document.getElementById('section5').parentNode.removeChild(document.getElementById('section5'));
+	// document.getElementById('section6').parentNode.removeChild(document.getElementById('section6'));
+  if (! window.navigator.onLine && localStorage.getItem("pistacja_data") != null) {
+    document.getElementById('datatime').innerHTML = "Using data from " + JSON.parse(localStorage.getItem("date"))[0].substring(0, 10);
+    document.getElementById('datatime').style.display = 'block';
+  } else {
+    document.getElementById('datatime').style.display = 'none';
+  }
   slideShowNumber.style.display = 'block';
   slideShowChart.style.display = 'none';
   numberButton.style.display = 'none';
@@ -39,11 +74,24 @@ numberButton.addEventListener('click', function() {
 chartButton.addEventListener('click', function() {
   title.style.display = 'block';
   title.style.marginTop = '55px';
+	header.parentNode.removeChild(header);
+	sections[0].parentNode.removeChild(sections[0]);
+	document.getElementById('section2').parentNode.removeChild(document.getElementById('section2'));
+	document.getElementById('section3').parentNode.removeChild(document.getElementById('section3'));
+	document.getElementById('section4').parentNode.removeChild(document.getElementById('section4'));
+	document.getElementById('section5').parentNode.removeChild(document.getElementById('section5'));
+	// document.getElementById('section6').parentNode.removeChild(document.getElementById('section6'));
+  if (! window.navigator.onLine && localStorage.getItem("pistacja_data") != null) {
+    document.getElementById('datatime').innerHTML = "Using data from " + JSON.parse(localStorage.getItem("date"))[0].substring(0, 10);
+    document.getElementById('datatime').style.display = 'block';
+  } else {
+    document.getElementById('datatime').style.display = 'none';
+  }
   slideShowNumber.style.display = 'none';
   slideShowChart.style.display = 'block';
   numberButton.style.display = 'none';
   chartButton.style.display = 'none';
-  startPauseButton.style.display = 'block';
+  startPauseBody.style.display = 'block';
   youtubeDropdown.style.display = 'block';
   youtubeNoDropdown.style.display = 'none';
   title.textContent = 'Pistacja Data Viewed in Chart';
@@ -55,11 +103,14 @@ chartButton.addEventListener('click', function() {
 
 // Click Start/Pause Button to start or pause the slide show.
 startPauseButton.addEventListener('click', function(e) {
+	startPauseBody.classList.toggle('toggle-body--on');
+	startPauseButton.classList.toggle('toggle-btn--on');
+	startPauseButton.classList.toggle('toggle-btn--scale');
   if (slideShowState) {
-    e.target.textContent = 'Start';
+    // e.target.textContent = 'Start';
     slideShowState = false;
   } else {
-    e.target.textContent = 'Pause';
+    // e.target.textContent = 'Pause';
     slideShowState = true;
     automaticSlideShowChart();
   }
@@ -74,13 +125,13 @@ function youtubeSelection(choice) {
   if (choice == 'number') {
     slideShowNumber.style.display = 'block';
     slideShowChart.style.display = 'none';
-    startPauseButton.style.display = 'none';
+    startPauseBody.style.display = 'none';
     title.innerHTML = titlesNumber[slideIndex];
   }
   else {
     slideShowChart.style.display = 'block';
     slideShowNumber.style.display = 'none';
-    startPauseButton.style.display = 'block';
+    startPauseBody.style.display = 'block';
     title.textContent = 'Pistacja Data Viewed in Chart';
     title.className += ' colorfulText';
     slideShowState = true;
@@ -173,58 +224,87 @@ var pistacjaSessionUserCategory = [];
 var spreadsheet = '19KvaY04qRaUYvk_rPWC5qHUgzdwr06Eq4b37VGuHjgY';
 var url = 'https://spreadsheets.google.com/feeds/list/' + spreadsheet + '/od6/public/basic?alt=json';
 
-// function fetchData() {
+// localStorage.removeItem("pistacja_data");
+// localStorage.removeItem("date");
 
-$.getJSON({
-  url: url,
-  success: function(response) {
-    var data = response.feed.entry;
-    
-    // parsedData is a list of objects which contains all the data imported from spreadsheet
-    for (var i = 3; i < data.length; i++) {
-      parsedData.push({
-        label: data[i].title.$t,
-        value: data[i].content.$t.split(', ')
-      });
-    }
-
-    // console.log(parsedData);
-		// localData = dataStoredLocally(parsedData);
-		//
-		// if (!testInternet()) {
-		// 	parsedData = localData
-		// }
+if (! window.navigator.onLine) {
+  if (localStorage.getItem("pistacja_data") == null) {
+    alert("Requires Internet connection.");
+  } else {
+    alert("You're offline. Using data from " +
+      JSON.parse(localStorage.getItem("date"))[0].substring(0, 10) + ".");
+    parsedData = JSON.parse(localStorage.getItem("pistacja_data"));
 
     // Assign different types of data to different arrays for the purpose of making the charts.
+		var thisyear = false;
+		var labelColor = "";
+		var yearstart = false;
     for (var i = 0; i < parsedData.length; i++) {
+			if (!thisyear) {
+				if (parsedData[i]['label'].substring(5) == "01" && i > 0) {
+					thisyear = true;
+					labelColor = "#1354b9";
+				} else {
+					labelColor = "#4e5867";
+				}
+			}
+			if (parsedData[i]['label'].substring(5) == "01" || i == 0) {
+				yearstart = true;
+			} else {
+				yearstart = false;
+			}
       var values = parsedData[i]['value'];
       for (var j = 0; j < values.length; j++) {
         values[j] = values[j].substring(values[j].indexOf(":") + 1);
       }
       monthlySubscribersData.push({
-        label: parsedData[i]['label'],
-        value: parsedData[i]['value'][0].substring(1)
+				label: yearstart
+          ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+          : monthNames[parsedData[i]['label'].substring(5)],
+        value: parsedData[i]['value'][0].substring(1),
+        labelFontColor: labelColor,
+        labelFontSize: "12px"
       });
 
       cumulativeSubscribersData.push({
-        label: parsedData[i]['label'],
-        value: parsedData[i]['value'][1]
+				label: yearstart
+          ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+          : monthNames[parsedData[i]['label'].substring(5)],
+        value: parsedData[i]['value'][1],
+        labelFontColor: labelColor,
+        labelFontSize: "12px"
       });
       monthlyViewsData.push({
-        label: parsedData[i]['label'],
-        value: parsedData[i]['value'][2]
+				label: yearstart
+          ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+          : monthNames[parsedData[i]['label'].substring(5)],
+        value: parsedData[i]['value'][2],
+        labelFontColor: labelColor,
+        labelFontSize: "12px"
       });
       cumulativeViewsData.push({
-        label: parsedData[i]['label'],
-        value: parsedData[i]['value'][3]
+				label: yearstart
+          ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+          : monthNames[parsedData[i]['label'].substring(5)],
+        value: parsedData[i]['value'][3],
+        labelFontColor: labelColor,
+        labelFontSize: "12px"
       });
       monthlyVideosPublishedData.push({
-        label: parsedData[i]['label'],
-        value: parsedData[i]['value'][4]
+				label: yearstart
+          ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+          : monthNames[parsedData[i]['label'].substring(5)],
+        value: parsedData[i]['value'][4],
+        labelFontColor: labelColor,
+        labelFontSize: "12px"
       });
       cumulativeVideosPublishedData.push({
-        label: parsedData[i]['label'],
-        value: parsedData[i]['value'][5]
+				label: yearstart
+          ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+          : monthNames[parsedData[i]['label'].substring(5)],
+        value: parsedData[i]['value'][5],
+        labelFontColor: labelColor,
+        labelFontSize: "12px"
       });
       commentsAndLikesData[0]['data'].push({
         value: parsedData[i]['value'][6]
@@ -233,7 +313,11 @@ $.getJSON({
         value: parsedData[i]['value'][7]
       });
       commentsAndLikesCategory.push({
-        label: parsedData[i]['label']
+				label: yearstart
+          ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+          : monthNames[parsedData[i]['label'].substring(5)],
+        labelFontColor: labelColor,
+        labelFontSize: "12px"
       });
       mp4PDFDownloadData[0]['data'].push({
         value: parsedData[i]['value'][25]
@@ -242,7 +326,11 @@ $.getJSON({
         value: parsedData[i]['value'][26]
       });
       mp4PDFDownloadCategory.push({
-        label: parsedData[i]['label']
+				label: yearstart
+          ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+          : monthNames[parsedData[i]['label'].substring(5)],
+        labelFontColor: labelColor,
+        labelFontSize: "12px"
       });
       pistacjaSessionUserData[0]['data'].push({
         value: parsedData[i]['value'][23]
@@ -251,7 +339,11 @@ $.getJSON({
         value: parsedData[i]['value'][24]
       });
       pistacjaSessionUserCategory.push({
-        label: parsedData[i]['label']
+				label: yearstart
+          ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+          : monthNames[parsedData[i]['label'].substring(5)],
+        labelFontColor: labelColor,
+        labelFontSize: "12px"
       });
 
 
@@ -285,7 +377,9 @@ $.getJSON({
     var tr1 = document.querySelectorAll('#table1 tr');
     for (var i = 1; i < tr1.length; i++) {
       var td1 = tr1[i].querySelectorAll('td');
-      td1[0].innerHTML = parsedData[i - 1]['label'];
+			td1[0].innerHTML = (i == 1 || parsedData[i - 1]['label'].substring(5) == "01")
+        ? parsedData[i - 1]['label'].substring(0, 5) + monthNames[parsedData[i - 1]['label'].substring(5)]
+        : monthNames[parsedData[i - 1]['label'].substring(5)];
       for (var j = 1; j < td1.length; j++) {
         td1[j].innerHTML = parsedData[i - 1]['value'][j - 1];
       }
@@ -295,7 +389,9 @@ $.getJSON({
     var tr2 = document.querySelectorAll('#table2 tr');
     for (var i = 1; i < tr2.length; i++) {
       var td2 = tr2[i].querySelectorAll('td');
-      td2[0].innerHTML = parsedData[i - 1]['label'];
+			td2[0].innerHTML = (i == 1 || parsedData[i - 1]['label'].substring(5) == "01")
+        ? parsedData[i - 1]['label'].substring(0, 5) + monthNames[parsedData[i - 1]['label'].substring(5)]
+        : monthNames[parsedData[i - 1]['label'].substring(5)];
       for (var j = 1; j < td2.length; j++) {
         td2[j].innerHTML = parsedData[i - 1]['value'][j - 1 + 6];
       }
@@ -306,7 +402,9 @@ $.getJSON({
     var tr3 = document.querySelectorAll('#table3 tr');
     for (var i = 1; i < tr3.length; i++) {
       var td3 = tr3[i].querySelectorAll('td');
-      td3[0].innerHTML = parsedData[i - 1]['label'];
+			td3[0].innerHTML = (i == 1 || parsedData[i - 1]['label'].substring(5) == "01")
+        ? parsedData[i - 1]['label'].substring(0, 5) + monthNames[parsedData[i - 1]['label'].substring(5)]
+        : monthNames[parsedData[i - 1]['label'].substring(5)];
       for (var j = 1; j < td3.length; j++) {
         td3[j].innerHTML = parsedData[i - 1]['value'][j - 1 + 8];
       }
@@ -316,7 +414,9 @@ $.getJSON({
     var tr4 = document.querySelectorAll('#table4 tr');
     for (var i = 1; i < tr4.length; i++) {
       var td4 = tr4[i].querySelectorAll('td');
-      td4[0].innerHTML = parsedData[i - 1]['label'];
+			td4[0].innerHTML = (i == 1 || parsedData[i - 1]['label'].substring(5) == "01")
+        ? parsedData[i - 1]['label'].substring(0, 5) + monthNames[parsedData[i - 1]['label'].substring(5)]
+        : monthNames[parsedData[i - 1]['label'].substring(5)];
       for (var j = 1; j < td4.length; j++) {
         td4[j].innerHTML = parsedData[i - 1]['value'][j - 1 + 25];
       }
@@ -326,7 +426,9 @@ $.getJSON({
     var tr5 = document.querySelectorAll('#table5 tr');
     for (var i = 1; i < tr5.length; i++) {
       var td5 = tr5[i].querySelectorAll('td');
-      td5[0].innerHTML = parsedData[i - 1]['label'];
+			td5[0].innerHTML = (i == 1 || parsedData[i - 1]['label'].substring(5) == "01")
+        ? parsedData[i - 1]['label'].substring(0, 5) + monthNames[parsedData[i - 1]['label'].substring(5)]
+        : monthNames[parsedData[i - 1]['label'].substring(5)];
       for (var j = 1; j < td5.length; j++) {
         td5[j].innerHTML = parsedData[i - 1]['value'][j - 1 + 23];
       }
@@ -336,7 +438,9 @@ $.getJSON({
     var tr6 = document.querySelectorAll('#table6 tr');
     for (var i = 1; i < tr6.length; i++) {
       var td6 = tr6[i].querySelectorAll('td');
-      td6[0].innerHTML = parsedData[i - 1]['label'];
+			td6[0].innerHTML = (i == 1 || parsedData[i - 1]['label'].substring(5) == "01")
+        ? parsedData[i - 1]['label'].substring(0, 5) + monthNames[parsedData[i - 1]['label'].substring(5)]
+        : monthNames[parsedData[i - 1]['label'].substring(5)];
       for (var j = 1; j < td6.length; j++) {
         td6[j].innerHTML = parsedData[i - 1]['value'][j - 1 + 15];
       }
@@ -346,7 +450,9 @@ $.getJSON({
     var tr7 = document.querySelectorAll('#table7 tr');
     for (var i = 1; i < tr7.length; i++) {
       var td7 = tr7[i].querySelectorAll('td');
-      td7[0].innerHTML = parsedData[i - 1]['label'];
+			td7[0].innerHTML = (i == 1 || parsedData[i - 1]['label'].substring(5) == "01")
+        ? parsedData[i - 1]['label'].substring(0, 5) + monthNames[parsedData[i - 1]['label'].substring(5)]
+        : monthNames[parsedData[i - 1]['label'].substring(5)];
       for (var j = 1; j < td7.length; j++) {
         td7[j].innerHTML = parsedData[i - 1]['value'][j - 1 + 21];
       }
@@ -363,7 +469,7 @@ $.getJSON({
         "chart": {
           'caption': 'Youtube Monthly Subscribers',
           'captionFontSize': '20',
-          'xAxisName': 'Date',
+          'xAxisName': '{br} Date',
           'xAxisNameFontSize': '15',
           'yAxisName': 'Youtube Subscribers(Monthly)',
           'yAxisNameFontSize': '15',
@@ -406,7 +512,7 @@ $.getJSON({
         "chart": {
           'caption': 'Youtube Cumulative Subscribers',
           'captionFontSize': '20',
-          'xAxisName': 'Date',
+          'xAxisName': '{br} Date',
           'xAxisNameFontSize': '15',
           'yAxisName': 'Youtube Subscribers(Cumulative)',
           'yAxisNameFontSize': '15',
@@ -448,7 +554,7 @@ $.getJSON({
         "chart": {
           'caption': 'Youtube Monthly Views',
           'captionFontSize': '20',
-          'xAxisName': 'Date',
+          'xAxisName': '{br} Date',
           'xAxisNameFontSize': '15',
           'yAxisName': 'Youtube Views(Monthly)',
           'yAxisNameFontSize': '15',
@@ -490,7 +596,7 @@ $.getJSON({
         "chart": {
           'caption': 'Youtube Cumulative Views',
           'captionFontSize': '20',
-          'xAxisName': 'Date',
+          'xAxisName': '{br} Date',
           'xAxisNameFontSize': '15',
           'yAxisName': 'Youtube Views(Cumulative)',
           'yAxisNameFontSize': '15',
@@ -532,7 +638,7 @@ $.getJSON({
         "chart": {
           'caption': 'Youtube Monthly Videos Published',
           'captionFontSize': '20',
-          'xAxisName': 'Date',
+          'xAxisName': '{br} Date',
           'xAxisNameFontSize': '15',
           'yAxisName': 'Youtube Videos Published(Monthly)',
           'yAxisNameFontSize': '15',
@@ -574,7 +680,7 @@ $.getJSON({
         "chart": {
           'caption': 'Youtube Cumulative Videos Published',
           'captionFontSize': '20',
-          'xAxisName': 'Date',
+          'xAxisName': '{br} Date',
           'xAxisNameFontSize': '15',
           'yAxisName': 'Youtube Videos Published(Cumulative)',
           'yAxisNameFontSize': '15',
@@ -616,7 +722,7 @@ $.getJSON({
         "chart": {
           'caption': 'Youtube Monthly Comments and Number of Likes',
           'captionFontSize': '20',
-          'xAxisName': 'Date',
+          'xAxisName': '{br} Date',
           'xAxisNameFontSize': '15',
           'yAxisName': 'Number of Comments and Likes',
           'yAxisNameFontSize': '15',
@@ -669,7 +775,7 @@ $.getJSON({
         "chart": {
           'caption': 'Average Views Grouped by Device Type',
           'captionFontSize': '20',
-          'paletteColors': '#99ccff, #80ff80, #ffff66, #ff9966, #ff8080',
+          'paletteColors': '#233D4D, #FE7F2D, #FCCA46, #A1C181, #579C87',
           'bgColor': '#ffffff',
           'showBorder': '0',
           'use3DLighting': '0',
@@ -709,7 +815,7 @@ $.getJSON({
         "chart": {
           'caption': 'Pistacja monthly MP4 and PDF Downloads',
           'captionFontSize': '20',
-          'xAxisName': 'Date',
+          'xAxisName': '{br} Date',
           'xAxisNameFontSize': '15',
           'yAxisName': 'Number of MP4 and PDF Downloads',
           'yAxisNameFontSize': '15',
@@ -763,7 +869,7 @@ $.getJSON({
         "chart": {
           'caption': 'Pistacja monthly Sessions and Users',
           'captionFontSize': '20',
-          'xAxisName': 'Date',
+          'xAxisName': '{br} Date',
           'xAxisNameFontSize': '15',
           'yAxisName': 'Number of Sessions and Users',
           'yAxisNameFontSize': '15',
@@ -804,16 +910,720 @@ $.getJSON({
         "dataset": pistacjaSessionUserData
       }
     }).render();
-
-    // for (var i = 0; i < charts.length; i++) {
-    // // console.log(charts[i]);
-    //   charts[i].innerHTML = '';
-    // }
   }
-});
-  // console.log('update once');
-// fetchData();
-// setInterval(fetchData, 5000);
+} else {
+  // alert("Online.");
+  $.getJSON({
+    url: url,
+    success: function(response) {
+      var data = response.feed.entry;
+      // console.log(data);
+      // parsedData is a list of objects which contains all the data imported from spreadsheet
+      for (var i = 3; i < data.length; i++) {
+        parsedData.push({
+          label: data[i].title.$t,
+          value: data[i].content.$t.split(', ')
+        });
+      }
+
+      // console.log(parsedData);
+
+      localStorage.setItem("pistacja_data", JSON.stringify(parsedData));
+      var curdate = new Date();
+      localStorage.setItem("date", JSON.stringify([curdate]));
+
+      // Assign different types of data to different arrays for the purpose of making the charts.
+			var thisyear = false;
+			var labelColor = "";
+			var yearstart = false;
+      for (var i = 0; i < parsedData.length; i++) {
+				if (!thisyear) {
+          if (parsedData[i]['label'].substring(5) == "01" && i > 0) {
+            thisyear = true;
+            labelColor = "#1354b9";
+          } else {
+            labelColor = "#4e5867";
+          }
+        }
+        if (parsedData[i]['label'].substring(5) == "01" || i == 0) {
+          yearstart = true;
+        } else {
+          yearstart = false;
+        }
+
+        var values = parsedData[i]['value'];
+        for (var j = 0; j < values.length; j++) {
+          values[j] = values[j].substring(values[j].indexOf(":") + 1);
+        }
+        monthlySubscribersData.push({
+					label: yearstart
+            ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+            : monthNames[parsedData[i]['label'].substring(5)],
+          value: parsedData[i]['value'][0].substring(1),
+          labelFontColor: labelColor,
+          labelFontSize: "12px"
+        });
+
+        cumulativeSubscribersData.push({
+					label: yearstart
+            ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+            : monthNames[parsedData[i]['label'].substring(5)],
+          value: parsedData[i]['value'][1],
+          labelFontColor: labelColor,
+          labelFontSize: "12px"
+        });
+        monthlyViewsData.push({
+					label: yearstart
+            ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+            : monthNames[parsedData[i]['label'].substring(5)],
+          value: parsedData[i]['value'][2],
+          labelFontColor: labelColor,
+          labelFontSize: "12px"
+        });
+        cumulativeViewsData.push({
+					label: yearstart
+            ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+            : monthNames[parsedData[i]['label'].substring(5)],
+          value: parsedData[i]['value'][3],
+          labelFontColor: labelColor,
+          labelFontSize: "12px"
+        });
+        monthlyVideosPublishedData.push({
+					label: yearstart
+            ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+            : monthNames[parsedData[i]['label'].substring(5)],
+          value: parsedData[i]['value'][4],
+          labelFontColor: labelColor,
+          labelFontSize: "12px"
+        });
+        cumulativeVideosPublishedData.push({
+					label: yearstart
+            ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+            : monthNames[parsedData[i]['label'].substring(5)],
+          value: parsedData[i]['value'][5],
+          labelFontColor: labelColor,
+          labelFontSize: "12px"
+        });
+        commentsAndLikesData[0]['data'].push({
+          value: parsedData[i]['value'][6]
+        });
+        commentsAndLikesData[1]['data'].push({
+          value: parsedData[i]['value'][7]
+        });
+        commentsAndLikesCategory.push({
+					label: yearstart
+            ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+            : monthNames[parsedData[i]['label'].substring(5)],
+          labelFontColor: labelColor,
+          labelFontSize: "12px"
+        });
+        mp4PDFDownloadData[0]['data'].push({
+          value: parsedData[i]['value'][25]
+        });
+        mp4PDFDownloadData[1]['data'].push({
+          value: parsedData[i]['value'][26]
+        });
+        mp4PDFDownloadCategory.push({
+					label: yearstart
+            ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+            : monthNames[parsedData[i]['label'].substring(5)],
+          labelFontColor: labelColor,
+          labelFontSize: "12px"
+        });
+        pistacjaSessionUserData[0]['data'].push({
+          value: parsedData[i]['value'][23]
+        });
+        pistacjaSessionUserData[1]['data'].push({
+          value: parsedData[i]['value'][24]
+        });
+        pistacjaSessionUserCategory.push({
+					label: yearstart
+            ? monthNames[parsedData[i]['label'].substring(5)] + "\n" + parsedData[i]['label'].substring(0, 4)
+            : monthNames[parsedData[i]['label'].substring(5)],
+          labelFontColor: labelColor,
+          labelFontSize: "12px"
+        });
+
+
+        averageViews += Number(parsedData[i]['value'][2]);
+        desktop += parseFloat(parsedData[i]['value'][8]);
+        mobile += parseFloat(parsedData[i]['value'][9]);
+        tablet += parseFloat(parsedData[i]['value'][10]);
+        tv += parseFloat(parsedData[i]['value'][11]);
+        others += parseFloat(parsedData[i]['value'][12]);
+      }
+
+      // Device Type Data from percentage to real number.
+      averageViews = averageViews / 13;
+      averageDeviceTypePercentage[0]['value'] = String((desktop / 1300) * averageViews);
+      averageDeviceTypePercentage[0]['displayValue'] = String((desktop/13).toFixed(2)) + '%';
+
+      averageDeviceTypePercentage[1]['value'] = String(mobile / 1300 * averageViews);
+      averageDeviceTypePercentage[1]['displayValue'] = String((mobile/13).toFixed(2)) + '%';
+
+      averageDeviceTypePercentage[2]['value'] = String(tablet / 1300 * averageViews);
+      averageDeviceTypePercentage[2]['displayValue'] = String((tablet/13).toFixed(2)) + '%';
+
+      averageDeviceTypePercentage[3]['value'] = String(tv / 1300 * averageViews);
+      averageDeviceTypePercentage[3]['displayValue'] = String((tv/13).toFixed(2)) + '%';
+
+      averageDeviceTypePercentage[4]['value'] = String(others / 1300 * averageViews);
+      averageDeviceTypePercentage[4]['displayValue'] = String((others/13).toFixed(2)) + '%';
+
+			maxSingleData(monthlySubscribersData, 'subscriber');
+			maxSingleData(monthlyViewsData, 'view');
+			maxCategoryData(commentsAndLikesData, 'comments', 'likes');
+			maxCategoryData(pistacjaSessionUserData, 'session', 'user');
+			maxPercentData(averageDeviceTypePercentage);
+			maximum.push(maxPercentData(averageDeviceTypePercentage));
+			showCountNumber(maximum[0]['subscriber'], '#subscriberNum', 600, run);
+			showView(maximum[1]['view']);
+			showComment(maximum[2]['comments']);
+			showLikes(maximum[3]['likes']);
+			deviceType(maximum[6]);
+
+      // Update table1:
+      var tr1 = document.querySelectorAll('#table1 tr');
+      for (var i = 1; i < tr1.length; i++) {
+        var td1 = tr1[i].querySelectorAll('td');
+				td1[0].innerHTML = (i == 1 || parsedData[i - 1]['label'].substring(5) == "01")
+						? parsedData[i - 1]['label'].substring(0, 5) + monthNames[parsedData[i - 1]['label'].substring(5)]
+						: monthNames[parsedData[i - 1]['label'].substring(5)];
+        td1[0].innerHTML = parsedData[i - 1]['label'];
+        for (var j = 1; j < td1.length; j++) {
+          td1[j].innerHTML = parsedData[i - 1]['value'][j - 1];
+        }
+      }
+
+      // Update table2:
+      var tr2 = document.querySelectorAll('#table2 tr');
+      for (var i = 1; i < tr2.length; i++) {
+        var td2 = tr2[i].querySelectorAll('td');
+				td2[0].innerHTML = (i == 1 || parsedData[i - 1]['label'].substring(5) == "01")
+          ? parsedData[i - 1]['label'].substring(0, 5) + monthNames[parsedData[i - 1]['label'].substring(5)]
+          : monthNames[parsedData[i - 1]['label'].substring(5)];
+        for (var j = 1; j < td2.length; j++) {
+          td2[j].innerHTML = parsedData[i - 1]['value'][j - 1 + 6];
+        }
+      }
+
+
+      // Update table3:
+      var tr3 = document.querySelectorAll('#table3 tr');
+      for (var i = 1; i < tr3.length; i++) {
+        var td3 = tr3[i].querySelectorAll('td');
+				td3[0].innerHTML = (i == 1 || parsedData[i - 1]['label'].substring(5) == "01")
+          ? parsedData[i - 1]['label'].substring(0, 5) + monthNames[parsedData[i - 1]['label'].substring(5)]
+          : monthNames[parsedData[i - 1]['label'].substring(5)];
+        for (var j = 1; j < td3.length; j++) {
+          td3[j].innerHTML = parsedData[i - 1]['value'][j - 1 + 8];
+        }
+      }
+
+      // Update table4:
+      var tr4 = document.querySelectorAll('#table4 tr');
+      for (var i = 1; i < tr4.length; i++) {
+        var td4 = tr4[i].querySelectorAll('td');
+				td4[0].innerHTML = (i == 1 || parsedData[i - 1]['label'].substring(5) == "01")
+          ? parsedData[i - 1]['label'].substring(0, 5) + monthNames[parsedData[i - 1]['label'].substring(5)]
+          : monthNames[parsedData[i - 1]['label'].substring(5)];
+        for (var j = 1; j < td4.length; j++) {
+          td4[j].innerHTML = parsedData[i - 1]['value'][j - 1 + 25];
+        }
+      }
+
+      // Update table5:
+      var tr5 = document.querySelectorAll('#table5 tr');
+      for (var i = 1; i < tr5.length; i++) {
+        var td5 = tr5[i].querySelectorAll('td');
+				td5[0].innerHTML = (i == 1 || parsedData[i - 1]['label'].substring(5) == "01")
+          ? parsedData[i - 1]['label'].substring(0, 5) + monthNames[parsedData[i - 1]['label'].substring(5)]
+          : monthNames[parsedData[i - 1]['label'].substring(5)];
+        for (var j = 1; j < td5.length; j++) {
+          td5[j].innerHTML = parsedData[i - 1]['value'][j - 1 + 23];
+        }
+      }
+
+      // Update table6:
+      var tr6 = document.querySelectorAll('#table6 tr');
+      for (var i = 1; i < tr6.length; i++) {
+        var td6 = tr6[i].querySelectorAll('td');
+				td6[0].innerHTML = (i == 1 || parsedData[i - 1]['label'].substring(5) == "01")
+          ? parsedData[i - 1]['label'].substring(0, 5) + monthNames[parsedData[i - 1]['label'].substring(5)]
+          : monthNames[parsedData[i - 1]['label'].substring(5)];
+        for (var j = 1; j < td6.length; j++) {
+          td6[j].innerHTML = parsedData[i - 1]['value'][j - 1 + 15];
+        }
+      }
+
+      // Update table7:
+      var tr7 = document.querySelectorAll('#table7 tr');
+      for (var i = 1; i < tr7.length; i++) {
+        var td7 = tr7[i].querySelectorAll('td');
+				td7[0].innerHTML = (i == 1 || parsedData[i - 1]['label'].substring(5) == "01")
+          ? parsedData[i - 1]['label'].substring(0, 5) + monthNames[parsedData[i - 1]['label'].substring(5)]
+          : monthNames[parsedData[i - 1]['label'].substring(5)];
+        for (var j = 1; j < td7.length; j++) {
+          td7[j].innerHTML = parsedData[i - 1]['value'][j - 1 + 21];
+        }
+      }
+
+      // Monthly Subscribers Bar Plot:
+      new FusionCharts({
+        type: 'column2d',
+        renderAt: 'monthlySubscribers',
+        width: '95%',
+        height: '500',
+        dataFormat: 'json',
+        dataSource: {
+          "chart": {
+            'caption': 'Youtube Monthly Subscribers',
+            'captionFontSize': '20',
+            'xAxisName': '{br} Date',
+            'xAxisNameFontSize': '15',
+            'yAxisName': 'Youtube Subscribers(Monthly)',
+            'yAxisNameFontSize': '15',
+            'formatNumberScale': '0',
+            'paletteColors': '#66b3ff',
+            'bgColor': '#ffffff',
+            'borderAlpha': '0',
+            'canvasBorderAlpha': '0',
+            'usePlotGradientColor': '0',
+            'plotBorderAlpha': '0',
+            'plotBorderColor': '#ffffff',
+            'placevaluesInside': '0',
+            'valueFontColor': '#6666ff',
+            'valueFontSize': '12',
+            'valueFontBold': '0.7',
+            'valueFontAlpha': '50',
+            'divlineColor': '#999999',
+            'divlineIsDashed': '1',
+            'showAlternateHGridColor': '0',
+            'toolTipBgColor': 'transparent',
+            'toolTipPadding': '12',
+            'toolTipBorderColor': '#0080ff',
+            'toolTipBorderRadius': '3',
+            'toolTipBorderThickness': '1',
+            'plotToolText': '<div style="font-size: 14px; color: #0080ff">$label: $value</div>'
+          },
+          "data": monthlySubscribersData
+        }
+      }).render();
+
+
+      // Cumulative Subscribers Bar Plot:
+      new FusionCharts({
+        type: 'column2d',
+        renderAt: 'cumulativeSubscribers',
+        width: '95%',
+        height: '500',
+        dataFormat: 'json',
+        dataSource: {
+          "chart": {
+            'caption': 'Youtube Cumulative Subscribers',
+            'captionFontSize': '20',
+            'xAxisName': '{br} Date',
+            'xAxisNameFontSize': '15',
+            'yAxisName': 'Youtube Subscribers(Cumulative)',
+            'yAxisNameFontSize': '15',
+            'formatNumberScale': '0',
+            'paletteColors': '#ff9999',
+            'bgColor': '#ffffff',
+            'borderAlpha': '0',
+            'canvasBorderAlpha': '0',
+            'usePlotGradientColor': '0',
+            'plotBorderAlpha': '0',
+            'plotBorderColor': '#ffffff',
+            'placevaluesInside': '0',
+            'valueFontColor': '#ff4d4d',
+            'valueFontSize': '12',
+            'valueFontBold': '0.7',
+            'valueFontAlpha': '50',
+            'divlineColor': '#999999',
+            'divlineIsDashed': '1',
+            'showAlternateHGridColor': '0',
+            'toolTipBgColor': 'transparent',
+            'toolTipPadding': '12',
+            'toolTipBorderColor': '#ff3333',
+            'toolTipBorderRadius': '3',
+            'toolTipBorderThickness': '1',
+            'plotToolText': '<div style="font-size: 14px; color: #ff3333">$label: $value</div>'
+          },
+          "data": cumulativeSubscribersData
+        }
+      }).render();
+
+      // Monthly Views Bar Plot:
+      new FusionCharts({
+        type: 'column2d',
+        renderAt: 'monthlyViews',
+        width: '95%',
+        height: '500',
+        dataFormat: 'json',
+        dataSource: {
+          "chart": {
+            'caption': 'Youtube Monthly Views',
+            'captionFontSize': '20',
+            'xAxisName': '{br} Date',
+            'xAxisNameFontSize': '15',
+            'yAxisName': 'Youtube Views(Monthly)',
+            'yAxisNameFontSize': '15',
+            'formatNumberScale': '0',
+            'paletteColors': '#bfff00',
+            'bgColor': '#ffffff',
+            'borderAlpha': '0',
+            'canvasBorderAlpha': '0',
+            'usePlotGradientColor': '0',
+            'plotBorderAlpha': '0',
+            'plotBorderColor': '#ffffff',
+            'placevaluesInside': '0',
+            'valueFontColor': '#80ff00',
+            'valueFontSize': '12',
+            'valueFontBold': '0.7',
+            'valueFontAlpha': '50',
+            'divlineColor': '#999999',
+            'divlineIsDashed': '1',
+            'showAlternateHGridColor': '0',
+            'toolTipBgColor': 'transparent',
+            'toolTipPadding': '12',
+            'toolTipBorderColor': '#00ff00',
+            'toolTipBorderRadius': '3',
+            'toolTipBorderThickness': '1',
+            'plotToolText': '<div style="font-size: 14px; color: #00ff00">$label: $value</div>'
+          },
+          "data": monthlyViewsData
+        }
+      }).render();
+
+      // Cumulative Views Bar Plot:
+      new FusionCharts({
+        type: 'column2d',
+        renderAt: 'cumulativeViews',
+        width: '95%',
+        height: '500',
+        dataFormat: 'json',
+        dataSource: {
+          "chart": {
+            'caption': 'Youtube Cumulative Views',
+            'captionFontSize': '20',
+            'xAxisName': '{br} Date',
+            'xAxisNameFontSize': '15',
+            'yAxisName': 'Youtube Views(Cumulative)',
+            'yAxisNameFontSize': '15',
+            'formatNumberScale': '0',
+            'paletteColors': '#ffbf00',
+            'bgColor': '#ffffff',
+            'borderAlpha': '0',
+            'canvasBorderAlpha': '0',
+            'usePlotGradientColor': '0',
+            'plotBorderAlpha': '0',
+            'plotBorderColor': '#ffffff',
+            'placevaluesInside': '0',
+            'valueFontColor': '#ff9966',
+            'valueFontSize': '12',
+            'valueFontBold': '0.7',
+            'valueFontAlpha': '50',
+            'divlineColor': '#999999',
+            'divlineIsDashed': '1',
+            'showAlternateHGridColor': '0',
+            'toolTipBgColor': 'transparent',
+            'toolTipPadding': '12',
+            'toolTipBorderColor': '#ff8c66',
+            'toolTipBorderRadius': '3',
+            'toolTipBorderThickness': '1',
+            'plotToolText': '<div style="font-size: 14px; color: #ff8c66">$label: $value</div>'
+          },
+          "data": cumulativeViewsData
+        }
+      }).render();
+
+      // Monthly Videos Published Bar Plot:
+      new FusionCharts({
+        type: 'column2d',
+        renderAt: 'monthlyVideosPublished',
+        width: '95%',
+        height: '500',
+        dataFormat: 'json',
+        dataSource: {
+          "chart": {
+            'caption': 'Youtube Monthly Videos Published',
+            'captionFontSize': '20',
+            'xAxisName': '{br} Date',
+            'xAxisNameFontSize': '15',
+            'yAxisName': 'Youtube Videos Published(Monthly)',
+            'yAxisNameFontSize': '15',
+            'formatNumberScale': '0',
+            'paletteColors': '#b3b3ff',
+            'bgColor': '#ffffff',
+            'borderAlpha': '0',
+            'canvasBorderAlpha': '0',
+            'usePlotGradientColor': '0',
+            'plotBorderAlpha': '0',
+            'plotBorderColor': '#ffffff',
+            'placevaluesInside': '0',
+            'valueFontColor': '#6666ff',
+            'valueFontSize': '12',
+            'valueFontBold': '0.7',
+            'valueFontAlpha': '50',
+            'divlineColor': '#999999',
+            'divlineIsDashed': '1',
+            'showAlternateHGridColor': '0',
+            'toolTipBgColor': 'transparent',
+            'toolTipPadding': '12',
+            'toolTipBorderColor': '#9966ff',
+            'toolTipBorderRadius': '3',
+            'toolTipBorderThickness': '1',
+            'plotToolText': '<div style="font-size: 14px; color: #9966ff">$label: $value</div>'
+          },
+          "data": monthlyVideosPublishedData
+        }
+      }).render();
+
+      // Cumulative Videos Published Bar Plot:
+      new FusionCharts({
+        type: 'column2d',
+        renderAt: 'cumulativeVideosPublished',
+        width: '95%',
+        height: '500',
+        dataFormat: 'json',
+        dataSource: {
+          "chart": {
+            'caption': 'Youtube Cumulative Videos Published',
+            'captionFontSize': '20',
+            'xAxisName': '{br} Date',
+            'xAxisNameFontSize': '15',
+            'yAxisName': 'Youtube Videos Published(Cumulative)',
+            'yAxisNameFontSize': '15',
+            'formatNumberScale': '0',
+            'paletteColors': '#ff99cc',
+            'bgColor': '#ffffff',
+            'borderAlpha': '0',
+            'canvasBorderAlpha': '0',
+            'usePlotGradientColor': '0',
+            'plotBorderAlpha': '0',
+            'plotBorderColor': '#ffffff',
+            'placevaluesInside': '0',
+            'valueFontColor': '#ff4da6',
+            'valueFontSize': '12',
+            'valueFontBold': '0.7',
+            'valueFontAlpha': '50',
+            'divlineColor': '#999999',
+            'divlineIsDashed': '1',
+            'showAlternateHGridColor': '0',
+            'toolTipBgColor': 'transparent',
+            'toolTipPadding': '12',
+            'toolTipBorderColor': '#ff4d88',
+            'toolTipBorderRadius': '3',
+            'toolTipBorderThickness': '1',
+            'plotToolText': '<div style="font-size: 14px; color: #ff4d88">$label: $value</div>'
+          },
+          "data": cumulativeVideosPublishedData
+        }
+      }).render();
+
+      // Comments and Number of Likes:
+      new FusionCharts({
+        type: 'MSColumn2D',
+        renderAt: 'commentsAndLikes',
+        width: '95%',
+        height: '500',
+        dataFormat: 'json',
+        dataSource: {
+          "chart": {
+            'caption': 'Youtube Monthly Comments and Number of Likes',
+            'captionFontSize': '20',
+            'xAxisName': '{br} Date',
+            'xAxisNameFontSize': '15',
+            'yAxisName': 'Number of Comments and Likes',
+            'yAxisNameFontSize': '15',
+            'formatNumberScale': '0',
+            'paletteColors': '#ff9999, #66ccff',
+            'bgColor': '#ffffff',
+            'borderAlpha': '0',
+            'canvasBorderAlpha': '0',
+            'usePlotGradientColor': '0',
+            'plotBorderAlpha': '0',
+            'plotBorderColor': '#ffffff',
+            'placevaluesInside': '0',
+            'valueFontColor': '#bf80ff',
+            'valueFontSize': '12',
+            'valueFontBold': '0.7',
+            'valueFontAlpha': '50',
+            'divlineColor': '#999999',
+            'divlineIsDashed': '1',
+            'showAlternateHGridColor': '0',
+            'showHoverEffect': '1',
+            'showToolTip': '1',
+            'toolTipBgColor': 'transparent',
+            'toolTipPadding': '12',
+            'toolTipBorderColor': '#7300e6',
+            'toolTipBorderRadius': '3',
+            'toolTipBorderThickness': '1',
+            'plotToolText': '<div style="font-size: 14px; color: #7300e6">$label $seriesname: $value</div>',
+            'legendBgAlpha': '0',
+            'legendBorderAlpha': '0',
+            'legendShadow': '0',
+            'legendItemFontSize': '15',
+            'legendItemFontColor': '#666666',
+            'showHoverEffect': '1'
+          },
+          "categories": [{
+            'category': commentsAndLikesCategory
+          }],
+          "dataset": commentsAndLikesData
+        }
+      }).render();
+
+      // Average Views grouped by Device type
+      new FusionCharts({
+        type: 'pie2d',
+        renderAt: 'averageDeviceTypePercentage',
+        width: '95%',
+        height: '500',
+        dataFormat: 'json',
+        dataSource: {
+          "chart": {
+            'caption': 'Average Views Grouped by Device Type',
+            'captionFontSize': '20',
+            'paletteColors': '#233D4D, #FE7F2D, #FCCA46, #A1C181, #579C87',
+            'bgColor': '#ffffff',
+            'showBorder': '0',
+            'use3DLighting': '0',
+            'showShadow': '0',
+            'enableSmartLabels': '1',
+            'startingAngle': '0',
+            'showPercentValues': '1',
+            'showPercentInTooltip': '1',
+            'decimals': '1',
+            'toolTipColor': '#7575a3',
+            'toolTipBorderThickness': '1',
+            'toolTipBorderRadius': '3',
+            'toolTipBorderColor': '#7575a3',
+            'toolTipBgColor': 'transparent',
+            'toolTipPadding': '12',
+            'plotToolText': '<div style="font-size: 14px; font-weight: bold">$label: $displayValue</div>',
+            'showHoverEffect': '1',
+            'showLegend': '1',
+            'labelFontColor': '#7e8589',
+            'labelFontSize': '13',
+            'labelFontBold': '1',
+            'legendBorderAlpha': '0',
+            'legendItemFontSize': '13'
+          },
+          "data": averageDeviceTypePercentage
+        }
+      }).render();
+
+      // Pistacja MP4 & PDF Downloads
+      new FusionCharts({
+        type: 'MSColumn2D',
+        renderAt: 'mp4AndPdfDownloads',
+        width: '95%',
+        height: '500',
+        dataFormat: 'json',
+        dataSource: {
+          "chart": {
+            'caption': 'Pistacja monthly MP4 and PDF Downloads',
+            'captionFontSize': '20',
+            'xAxisName': '{br} Date',
+            'xAxisNameFontSize': '15',
+            'yAxisName': 'Number of MP4 and PDF Downloads',
+            'yAxisNameFontSize': '15',
+            'formatNumberScale': '0',
+            'paletteColors': '#68bcec, #ff80bf',
+            'bgColor': '#ffffff',
+            'borderAlpha': '0',
+            'canvasBorderAlpha': '0',
+            'usePlotGradientColor': '0',
+            'plotBorderAlpha': '0',
+            'plotBorderColor': '#ffffff',
+            'placevaluesInside': '0',
+            'valueFontColor': '#8080ff',
+            'valueFontSize': '12',
+            'valueFontBold': '0.7',
+            'valueFontAlpha': '50',
+            'divlineColor': '#999999',
+            'divlineIsDashed': '1',
+            'showAlternateHGridColor': '0',
+            'showHoverEffect': '1',
+            'showToolTip': '1',
+            'toolTipBgColor': 'transparent',
+            'toolTipPadding': '12',
+            'toolTipBorderColor': '#3333cc',
+            'toolTipBorderRadius': '3',
+            'toolTipBorderThickness': '1',
+            'plotToolText': '<div style="font-size: 14px; color: #3333cc">$label $seriesname: $value</div>',
+            'legendBgAlpha': '0',
+            'legendBorderAlpha': '0',
+            'legendShadow': '0',
+            'legendItemFontSize': '15',
+            'legendItemFontColor': '#666666',
+            'showHoverEffect': '1'
+          },
+          "categories": [{
+            'category': mp4PDFDownloadCategory
+          }],
+          "dataset": mp4PDFDownloadData
+        }
+      }).render();
+
+
+      // Pistacja Sessions & Users Downloads
+      new FusionCharts({
+        type: 'MSColumn2D',
+        renderAt: 'pistacjaSessionUser',
+        width: '95%',
+        height: '500',
+        dataFormat: 'json',
+        dataSource: {
+          "chart": {
+            'caption': 'Pistacja monthly Sessions and Users',
+            'captionFontSize': '20',
+            'xAxisName': '{br} Date',
+            'xAxisNameFontSize': '15',
+            'yAxisName': 'Number of Sessions and Users',
+            'yAxisNameFontSize': '15',
+            'formatNumberScale': '0',
+            'paletteColors': '#8383e2, #9be283',
+            'bgColor': '#ffffff',
+            'borderAlpha': '0',
+            'canvasBorderAlpha': '0',
+            'usePlotGradientColor': '0',
+            'plotBorderAlpha': '0',
+            'plotBorderColor': '#ffffff',
+            'placevaluesInside': '0',
+            'valueFontColor': '#b383e2',
+            'valueFontSize': '12',
+            'valueFontBold': '0.7',
+            'valueFontAlpha': '50',
+            'divlineColor': '#999999',
+            'divlineIsDashed': '1',
+            'showAlternateHGridColor': '0',
+            'showHoverEffect': '1',
+            'showToolTip': '1',
+            'toolTipBgColor': 'transparent',
+            'toolTipPadding': '12',
+            'toolTipBorderColor': '#6666ff',
+            'toolTipBorderRadius': '3',
+            'toolTipBorderThickness': '1',
+            'plotToolText': '<div style="font-size: 14px; color: #6666ff">$label $seriesname: $value</div>',
+            'legendBgAlpha': '0',
+            'legendBorderAlpha': '0',
+            'legendShadow': '0',
+            'legendItemFontSize': '15',
+            'legendItemFontColor': '#666666',
+            'showHoverEffect': '1'
+          },
+          "categories": [{
+            'category': pistacjaSessionUserCategory
+          }],
+          "dataset": pistacjaSessionUserData
+        }
+      }).render();
+    }
+  });
+}
+
 
 
 // Move slides with slider arrows:
@@ -889,8 +1699,16 @@ function automaticSlideShowChart() {
 automaticSlideShowChart();
 
 
-// console.log(1);
-//
+
+function datatime() {
+  if (! navigator.onLine && ! localStorage.getItem("pistacja_data") == null) {
+    return "Using data from " + JSON.parse(localStorage.getItem("date"))[0].substring(0, 10);
+  } else {
+    return "";
+  }
+}
+
+
 function reloadTest() {
   location.reload();
 }
@@ -900,81 +1718,289 @@ setInterval(reloadTest, 86400000);
 
 
 
+function maxCategoryData(data, label1, label2) {
+	var data1 = [];
+	var data2 = [];
+	for (var i = 0; i < data[0]['data'].length; i++) {
+		var str1 = data[0]['data'][i]['value'];
+		var str2 = data[1]['data'][i]['value'];
+		data1.push(Number(str1.replace(/\s/g, '')));
+		data2.push(Number(str2.replace(/\s/g, '')));
+	}
+	var obj1 = {};
+	var obj2 = {};
+	obj1[label1] = Math.max(...data1);
+	obj2[label2] = Math.max(...data2);
+	maximum.push(obj1);
+	maximum.push(obj2);
+}
 
-// Test if the Internet connection is good or not.
-function testInternet() {
-	var online;
-	// check whether this function works (online only)
-	try {
-	  var x = google.maps.MapTypeId.TERRAIN;
-	  online = true;
-		return online;
-	} catch (e) {
-	  online = false;
-		return false;
+
+function maxSingleData(data, label) {
+	var label = label;
+	var numbers = data.map(obj => Number(obj['value']));
+	maxNumber = Math.max(...numbers);
+	var obj = {};
+	obj[label] = maxNumber;
+	maximum.push(obj);
+}
+
+function maxPercentData(data) {
+	var maxNumber = Math.max(...data.map(
+		obj => Number(obj['value'])
+	));
+	var device = data.filter(obj => obj['value'] == maxNumber)[0]['label'];
+	return device;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function setup() {
+  TweenMax.set("#shadow", {
+    scale:0,
+    transformOrigin:"15px 8px"
+  });
+  TweenMax.set("#tree", {
+    scale:0,
+    transformOrigin:"154px bottom"
+  });
+  TweenMax.set("#leaf-rb", {
+    scale:0,
+    rotation:'-60cw',
+    y: -15,
+    transformOrigin:"left bottom"
+  });
+  TweenMax.set("#leaf-rm", {
+    scale:0,
+    rotation:'-50cw',
+    y: 30,
+    transformOrigin:"left bottom"
+  });
+  TweenMax.set("#leaf-lb", {
+    scale:0,
+    rotation:'60cw',
+    y: -80,
+    transformOrigin:"right bottom"
+  });
+  TweenMax.set("#leaf-lm", {
+    scale:0,
+    rotation:'40cw',
+    y: -90,
+    transformOrigin:"right bottom"
+  });
+
+  TweenMax.set("#leaf-top", {
+    scale:0,
+    transformOrigin:"center bottom"
+  });
+
+  TweenMax.set("#leaf-rb g", {
+    scale:0,
+    transformOrigin:"left 60px"
+  });
+  TweenMax.set("#leaf-rm g", {
+    scale:0,
+    transformOrigin:"22px 140px"
+  });
+  TweenMax.set("#leaf-lb g", {
+    scale:0,
+    transformOrigin:"right 56px"
+  });
+  TweenMax.set("#leaf-lm g", {
+    scale:0,
+    transformOrigin:"106px bottom"
+  });
+}
+
+
+function animate() {
+var tl = new TimelineMax({
+      delay: 0.42,
+      // repeat: -1,
+      // repeatDelay: 2,
+      yoyo: true
+    });
+
+    tl.to("#shadow", 2, {
+      scale:1
+    }, 0).to("#tree", 2, {
+      scale:1
+    }, 0).to("#leaf-rb", 2, {
+      scale:1,
+      rotation:'0cw',
+      y: 0,
+      delay: 0.35
+    }, 0).to("#leaf-rm", 2, {
+      scale:1,
+      rotation:'0cw',
+      y: 0,
+      delay: 0.35
+    }, 0).to("#leaf-lb", 2, {
+      scale:1,
+      rotation:'0cw',
+      y: 0,
+      delay: 0.35
+    }, 0).to("#leaf-lm", 2, {
+      scale:1,
+      rotation:'0cw',
+      y: 0,
+      delay: 0.35
+    }, 0).to("#leaf-top", 2.5, {
+      scale:1,
+      delay: 0.35
+    }, 0).to("#leaf-lb g", 2.25, {
+      scale:1,
+      delay: 0.5
+    }, 0).to("#leaf-lm g", 2.25, {
+      scale:1,
+      delay: 0.6
+    }, 0).to("#leaf-rb g", 2.25, {
+      scale:1,
+      delay: 0.5
+    }, 0).to("#leaf-rm g", 2.25, {
+      scale:1,
+      delay: 0.6
+    }, 0);
+
+    return tl;
+}
+
+function stopAndReset() {
+  TweenMax.killAll(false, true, false);
+  TweenMax.set("#tree", {clearProps:"all"});
+  TweenMax.set("#shadow", {clearProps:"all"});
+  TweenMax.set("#leaf-top", {clearProps:"all"});
+  TweenMax.set("#leaf-rb", {clearProps:"all"});
+  TweenMax.set("#leaf-rm", {clearProps:"all"});
+  TweenMax.set("#leaf-lb", {clearProps:"all"});
+  TweenMax.set("#leaf-lm", {clearProps:"all"});
+  TweenMax.set("#leaf-top", {clearProps:"all"});
+  TweenMax.set("#leaf-rb g", {clearProps:"all"});
+  TweenMax.set("#leaf-rm g", {clearProps:"all"});
+  TweenMax.set("#leaf-lb g", {clearProps:"all"});
+  TweenMax.set("#leaf-lm g", {clearProps:"all"});
+}
+
+// stopAndReset();
+setup();
+// window.onload = animate;
+
+
+
+function showCountNumber(number, id, position, run) {
+	$(window).on('scroll', function() {
+		if (($(window).scrollTop() >= position) && !run) {
+			  run = true;
+				countNumber(0, number, id);
+		}
+	});
+	if (($(window).scrollTop() >= position) && !run) {
+			countNumber(1400, number, id);
 	}
 }
-
-
-// Store data into localStorage
-function dataStoredLocally(parsedData) {
-	localStorage.setItem('Pistacja', JSON.stringify(parsedData));
-	localData = JSON.parse(localStorage.getItem('Pistacja'));
-	return localData;
+function countNumber(delay, number, id) {
+	run = true;
+	$({ Counter: 0 }).animate({
+			Counter: number
+		}, {
+			duration: 4000,
+			easing: 'swing',
+			step: function() {
+				$(id).text(Math.ceil(this.Counter));
+			}
+	});
 }
 
 
 
 
-// setInterval(reloadTest, 10000);
-
-// console.log(monthlySubscribersData);
-// Mark Charts:
-
-// Monthly Subscribers:
-// new FusionCharts({
-//   type: 'column2d',
-//   renderAt: 'monthlySubscribers',
-//   width: '95%',
-//   height: '500',
-//   dataFormat: 'json',
-//   dataSource: {
-//     "chart": {
-//       'caption': 'Youtube Monthly Subscribers',
-//       'xAxisName': 'Date',
-//       'yAxisName': 'Youtube Subscribers(Monthly)',
-//
-//     },
-//     "data": monthlySubscribersData
-//   }
-// }).render();
+function showView(number) {
+	var content = 'Maximum \n User: \n' + String(number);
+	$('.water-drop').attr('data-content', content);
+	$(window).on('scroll', function() {
+		if (($(window).scrollTop() >= 600)) {
+				setTimeout(animate, 3000);
+		}
+	});
+	if (($(window).scrollTop() >= 600) && !run2) {
+			setTimeout(animate, 3000);
+	}
+	run2 = true;
+}
 
 
 
-// Automatics slide show for number display
-// var index1 = 0;
-// title1 = 'Subscribers <span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span> ' +
-//          'Views <span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span> ' +
-//          'Videos Published';
-// title2 = 'Monthly Comments <span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span> ' +
-//          'Monthly Number of Likes';
-// title3 = 'Desktop, Mobile, Tablet, TV <span class="ampersand">&</span> Other Views';
-//
-// titlesNumber = [title1, title2, title3];
 
-// function automaticSlideShowNumber() {
-//   if (slideShowState == 'Start') {
-//     for (var j = 0; j < dataTables.length; j++) {
-//       dataTables[j].style.display = 'none';
-//     }
-//     index1 += 1;
-//     if (index1 > dataTables.length) {
-//         index1 = 1;
-//     }
-//     dataTables[index1 - 1].style.display = 'table';
-//     title.innerHTML = titlesNumber[index1 - 1];
-//     setTimeout(automaticSlideShowNumber, 5000);
-//   } else {
-//     clearTimeout(automaticSlideShowNumber);
-//   }
-// }
+function showComment(number) {
+	$(window).on('scroll', function() {
+		if (($(window).height() + $(window).scrollTop() > 1940) && !run3) {
+				comment(number);
+		} else {
+			// $('html').removeClass("step-one");
+			// $('html').removeClass("step-two");
+		}
+	});
+	if (($(window).height() + $(window).scrollTop() > 1940) && !run3) {
+			comment(number);
+	}
+}
+function comment(number) {
+	document.getElementById('commentNumber').textContent = String(number);
+	$(function() {
+		document.getElementById('commentDes').style.display = 'block';
+		document.getElementById('commentNumber').style.display = 'block';
+		$(".poster h1, .poster p").lettering();
+		$(".poster p span").each(function() {  $(this).css({ top: -(Math.floor(Math.random()*1001)+1500), left: Math.floor(Math.random()*1001)-500,  }); });
+		setTimeout(function() {$('html').addClass("step-one");}, 1000);
+		setTimeout(function() {$('html').addClass("step-two");}, 3000);
+	});
+	run3 = true;
+}
+
+
+
+
+
+function showLikes(number) {
+	$(window).on('scroll', function() {
+		if (($(window).height() + $(window).scrollTop() > 2630) && !run4) {
+				likes(number);
+		}
+	});
+	if (($(window).height() + $(window).scrollTop() > 2630) && !run4) {
+			likes(number);
+	}
+}
+function likes(number) {
+	document.getElementById('likesNumber').textContent = String(number);
+	$(function() {
+		document.getElementById('likesDes').style.display = 'block';
+		document.getElementById('likesNumber').style.display = 'block';
+		$("#poster2 h1, #poster2 p").lettering();
+		$("#poster2 p span").each(function() {$(this).css({ top: -(Math.floor(Math.random()*1001)+1500), left: Math.floor(Math.random()*1001)-500,  }); });
+		$('html').removeClass("step-one");
+		$('html').removeClass("step-two");
+		setTimeout(function() {$('html').addClass("step-one2");}, 1000);
+		setTimeout(function() {$('html').addClass("step-two2");}, 3000);
+	});
+	run4 = true;
+}
+
+
+
+function deviceType(type) {
+	document.getElementById('deviceName').textContent = type;
+}
