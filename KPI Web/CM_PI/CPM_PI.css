@@ -1,0 +1,333 @@
+/* General formatting */
+
+* {box-sizing: border-box}
+
+*:before, *:after {box-sizing: border-box;}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  /* background: rgb(209, 231, 81); */
+  /* background: linear-gradient(to bottom, #b1b5ea 1%,#a6e6ff 70%,#94c5f8 100%); */
+  font-family: "Monstserrat", "Avenir";
+  margin: 0 auto;
+}
+
+
+/* Style the title  */
+
+h2 {
+  text-align: center;
+  font-weight: bold;
+  display: none;
+  margin: 0px auto;
+  animation: opac 0.6s;
+  color: white;
+}
+
+@keyframes opac {
+  from {opacity: 0}
+  to {opacity: 1}
+}
+
+span.glyphicon.glyphicon-star-empty, span.ampersand {
+  color: #66b3ff;
+}
+
+.colorfulText {
+  font-weight: normal;
+  color: white;
+}
+
+
+/* Style the numberButton and chartButton  */
+
+.buttons {
+  position: relative;
+  top: 43%;
+  text-align: center;
+}
+
+.btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn {
+  width: 162px;
+  height: 54px;
+  background-color: transparent;
+  margin: 10px;
+  border:2px solid black;
+  color: black;
+  font-weight: 800;
+  display: inline-block;
+}
+
+
+/* Styles for slider arrows */
+
+.prev, .next {
+  cursor: pointer;
+  padding: 8px;
+  position: fixed;
+  top: 350px;
+  background-color: transparent;
+  border: 0;
+  font-size: 24px;
+  overflow: hidden;
+}
+
+.prev {
+  left: 0%;
+}
+
+.next {
+  right: 0%;
+}
+
+.next:hover, .prev:hover, .next:focus, .prev:focus {
+  background-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+
+
+/* Styles for the dots */
+
+.dot {
+  cursor: pointer;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  height: 15px;
+  width: 15px;
+  padding: 8px 8px;
+  /* margin: 25px 15px; */
+  margin: 0 15px;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+
+.dot:hover, .active {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Styles for the slideShow and tables */
+
+.numberButtonSelected {
+  display: block;
+  position: relative;
+  /* left: 10px; */
+  text-align: center;
+}
+
+.data {
+  display: none;
+}
+
+.slideShow {
+  display: none;
+  margin: 30px auto;
+  /* background-color: transparent; */
+  background-color: white;
+  width: 95%;
+  height: 580px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  overflow-x: scroll;
+  overflow-y: scroll;
+}
+
+
+table {
+  position: relative;
+  animation: animateright 0.6s;
+}
+
+@keyframes animateright {
+  from {right:-300px;opacity:0}
+  to {right:0;opacity:1}
+}
+
+@-moz-keyframes animateright {
+  from {right:-300px;opacity:0}
+  to {right:0;opacity:1}
+}
+
+@-webkit-keyframes animateright {
+  from {right:-300px;opacity:0}
+  to {right:0;opacity:1}
+}
+
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+  padding: 8px;
+  line-height: 1.5;
+  vertical-align:top;
+  border-top: 0;
+  text-align: center;
+}
+
+.table>tbody>tr>th {
+  vertical-align: bottom;
+  border-bottom: 0;
+  color: #fff;
+  background: black;
+}
+
+.table>tbody>tr>td {
+  color: #666666;
+  border-bottom: 1px solid #f2f2f2;
+  background: #fff;
+}
+
+.table>tbody>tr:hover td {
+  background-color: #ECF1F2;
+  cursor: pointer;
+}
+
+/* Style the charts */
+.chartButtonSelected {
+  display: block;
+  position: relative;
+  left: 10px;
+  text-align: center;
+}
+
+.chart {
+  display: none;
+  animation: animateright 0.6s;
+}
+
+@keyframes animateright {
+  from {right:-300px;opacity:0}
+  to {right:0;opacity:1}
+}
+
+@-moz-keyframes animateright {
+  from {right:-300px;opacity:0}
+  to {right:0;opacity:1}
+}
+
+@-webkit-keyframes animateright {
+  from {right:-300px;opacity:0}
+  to {right:0;opacity:1}
+}
+
+/* #monthlySubscribers, #cumulativeSubscribers, #monthlyViews, #cumulativeViews, #monthlyVideosPublished, #cumulativeVideosPublished, #commentsAndLikes, #averageDeviceTypePercentage, #mp4AndPdfDownloads, #pistacjaSessionUser {
+  position: relative;
+  top: 25px;
+} */
+
+
+/* Style the Start/Pause Button */
+/* #startPauseButton {
+  display: none;
+  margin: 16px auto;
+  border: 2px solid white;
+  border-radius: 10%;
+  padding: 5px 22px;
+  font-size: 22px;
+  background-color: transparent;
+  color: steelblue;
+  font-weight: bold;
+  transition: all 0.4s;
+  -webkit-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  outline: none;
+} */
+#startPauseBody {
+  display: none;
+  margin-bottom: 20px;
+}
+
+/* #startPauseButton:hover, #startPauseButton:focus {
+  transform: scale(1.5);
+  background-color: rgba(255, 255, 255, 0.2);
+} */
+
+/* Style the navigation bar */
+
+ul.dropdown-menu {
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 0;
+  height: 80px;
+}
+
+.dropdown-toggle {
+  background-color: transparent !important;
+}
+
+ul.dropdown-menu > li > a {
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: bold;
+  height: 40px;
+}
+
+ul.dropdown-menu > li > a:hover, ul.dropdown-menu > li > a:focus {
+  color: black;
+  background-color: transparent;
+}
+
+
+nav.navbar, .navbar-default, .navbar-fixed-top {
+  background-color: rgb(77, 188, 233);
+  border: 0;
+}
+
+.navbar-default .navbar-nav > li > a {
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.navbar-default .navbar-brand {
+  color: white;
+  font-weight: bold;
+}
+
+.navbar-default .navbar-toggle {
+  border-color: white;
+}
+
+.navbar-default .navbar-toggle .icon-bar {
+  background-color: white;
+}
+
+.navbar-default .navbar-toggle:focus, .navbar-default .navbar-toggle:hover {
+  background-color: rgb(38, 173, 228);
+}
+
+.navbar-default .navbar-brand:focus, .navbar-default .navbar-brand:hover {
+  color: white;
+  background-color: rgb(38, 173, 228);
+}
+
+.navbar-default .navbar-nav>li>a:focus, .navbar-default .navbar-nav>li>a:hover {
+  color: white;
+  font-weight: bold;
+  background-color: rgb(38, 173, 228);
+}
+
+#activePage {
+  background-color: rgb(38, 173, 228);
+}
+
+/* Scroll down in dashboard */
+
+.scroll {
+  text-align: center;
+  position: absolute;
+  bottom: 60px;
+  width: 200px;
+  margin: auto;
+  display: block;
+  cursor: pointer;
+  padding-bottom: 40px;
+  left: 0;
+  right: 0;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.5);
+}
